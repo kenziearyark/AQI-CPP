@@ -30,14 +30,6 @@ g++ -std=c++17 -O2 AQI.cpp -o AQI -lcurl
 
 On the first run, enter your API read key and the sensor index when prompted. The app writes them to `settings.txt`, with the key on the first line and the sensor index on the second. On later runs, it reads those values automatically. Run the program from the project directory so it can find the settings file.
 
-## Keep your key private
-
-`settings.txt` contains the API key as plain text. It is excluded by `.gitignore`; do not commit or share it. On Linux, you can restrict access to your account with:
-
-```sh
-chmod 600 settings.txt
-```
-
 ## How the estimate is calculated
 
 The app takes the latest outdoor `pm2.5_atm` concentration, finds its range in the [US EPA PM2.5 AQI breakpoint table](https://document.airnow.gov/technical-assistance-document-for-the-reporting-of-daily-air-quailty.pdf), and scales the concentration into that range's AQI values:
