@@ -1,47 +1,51 @@
 # AQI Look Up
 
-A small C++ terminal app that requests a PurpleAir sensor reading and estimates a US EPA PM2.5 AQI value.
+Aplikasi terminal sederhana yang dibuat dengan C++ untuk mengambil data dari sensor PurpleAir dan memperkirakan nilai AQI PM2.5 berdasarkan skala US EPA.
 
-## What it does
+## Latar belakang
 
-- Asks for a PurpleAir API read key and sensor index on the first run.
-- Saves those details in a local `settings.txt` file for later runs.
-- Fetches the sensor's latest `pm2.5_atm` reading with libcurl.
-- Converts that reading to an AQI estimate using US EPA PM2.5 breakpoints.
+Saya mendapat ide membuat aplikasi ini karena kampung halaman saya sedang mengalami masalah asap. Saat kondisinya memburuk, AQI di sana mencapai sekitar **230**. Saya ingin punya cara sederhana untuk melihat pembacaan sensor udara dan memahami seberapa buruk kualitas udaranya.
 
-The app fetches **one reading when it starts**. Its menu does not refresh the reading yet. The displayed number is an estimate from a recent raw sensor reading, not an official daily or NowCast AQI.
+## Fitur
 
-## Requirements
+- Meminta API read key PurpleAir dan indeks sensor saat pertama kali dijalankan.
+- Menyimpan keduanya dalam berkas lokal `settings.txt` agar tidak perlu diketik lagi pada penggunaan berikutnya.
+- Mengambil pembacaan `pm2.5_atm` terbaru dari sensor menggunakan libcurl.
+- Mengubah pembacaan tersebut menjadi perkiraan AQI dengan tabel batas PM2.5 US EPA.
 
-- A C++17 compiler, such as `g++`
-- libcurl development headers and library
-- A [PurpleAir API read key](https://develop.purpleair.com/) and a sensor index
+Aplikasi mengambil **satu pembacaan saat dijalankan**. Menu yang ada saat ini belum memperbarui data secara otomatis. Angka yang ditampilkan adalah perkiraan dari pembacaan mentah sensor terbaru, bukan AQI harian resmi atau AQI NowCast.
 
-The project includes `json.hpp` for parsing the API response, so no separate JSON library installation is needed.
+## Kebutuhan
 
-## Build and run
+- Kompiler C++17, misalnya `g++`
+- Header pengembangan dan pustaka libcurl
+- [API read key PurpleAir](https://develop.purpleair.com/) dan indeks sensor
 
-From the project directory:
+Proyek ini sudah menyertakan `json.hpp` untuk membaca respons API, jadi tidak perlu memasang pustaka JSON secara terpisah.
+
+## Kompilasi dan penggunaan
+
+Jalankan perintah berikut dari direktori proyek:
 
 ```sh
 g++ -std=c++17 -O2 AQI.cpp -o AQI -lcurl
 ./AQI
 ```
 
-On the first run, enter your API read key and the sensor index when prompted. The app writes them to `settings.txt`, with the key on the first line and the sensor index on the second. On later runs, it reads those values automatically. Run the program from the project directory so it can find the settings file.
+Saat pertama kali dijalankan, masukkan API read key dan indeks sensor ketika diminta. Aplikasi akan menyimpannya ke `settings.txt`: baris pertama berisi API key dan baris kedua berisi indeks sensor. Pada penggunaan berikutnya, aplikasi akan membaca kedua nilai itu secara otomatis. Jalankan aplikasi dari direktori proyek agar berkas pengaturan dapat ditemukan.
 
-## How the estimate is calculated
+## Cara menghitung perkiraan AQI
 
-The app takes the latest outdoor `pm2.5_atm` concentration, finds its range in the [US EPA PM2.5 AQI breakpoint table](https://document.airnow.gov/technical-assistance-document-for-the-reporting-of-daily-air-quailty.pdf), and scales the concentration into that range's AQI values:
+Aplikasi mengambil konsentrasi `pm2.5_atm` terbaru dari sensor luar ruangan, mencari rentangnya pada [tabel batas AQI PM2.5 US EPA](https://document.airnow.gov/technical-assistance-document-for-the-reporting-of-daily-air-quailty.pdf), lalu menghitung posisi konsentrasi tersebut dalam rentang AQI yang sesuai:
 
 ```text
 AQI = I_low + (C - C_low) / (C_high - C_low) * (I_high - I_low)
 ```
 
-Here, `C` is the PM2.5 concentration; the four low/high values come from the matching breakpoint row. The current implementation uses the raw reading without a PurpleAir correction and does not calculate an EPA NowCast.
+Di sini, `C` adalah konsentrasi PM2.5. Empat nilai batas bawah dan atas diambil dari baris tabel yang sesuai. Versi saat ini memakai pembacaan mentah tanpa koreksi PurpleAir dan belum menghitung EPA NowCast.
 
-## Sources
+## Sumber
 
-- [PurpleAir API guide](https://community.purpleair.com/t/making-api-calls-with-the-purpleair-api/180)
-- [US EPA AQI calculation guide](https://document.airnow.gov/technical-assistance-document-for-the-reporting-of-daily-air-quailty.pdf)
-- [libcurl documentation](https://curl.se/libcurl/c/)
+- [Panduan API PurpleAir](https://community.purpleair.com/t/making-api-calls-with-the-purpleair-api/180)
+- [Panduan perhitungan AQI US EPA](https://document.airnow.gov/technical-assistance-document-for-the-reporting-of-daily-air-quailty.pdf)
+- [Dokumentasi libcurl](https://curl.se/libcurl/c/)
