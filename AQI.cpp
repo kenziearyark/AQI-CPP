@@ -13,7 +13,7 @@ struct Data {
 class Menu {
     private:
         void Setup(Data& data) {
-            std::cout << "=== Setup ===\nAPI?\n > "; std::cin >> data.API;
+            std::cout << "========== Setup ==========\nAPI?\n > "; std::cin >> data.API;
             std::cout << "Location ID?\n > "; std::cin >> data.LocationID;
         }
     public:
